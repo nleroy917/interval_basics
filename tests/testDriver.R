@@ -34,7 +34,7 @@ for (i in 1:50) {
 	fixedquery = list(start=1000000, end=2000000)
 	qgr = GRanges("chrX", ranges=IRanges(fixedquery$start, fixedquery$end))
 	dbdf = data.frame(starts=start(randdb), ends=end(randdb))
-	cos = countOverlapsSimple(q, dbdf)
+	cos = countOverlapsSimple(fixedquery, dbdf)
 	check = GenomicRanges::countOverlaps(qgr, randdb)
 	assert("countOverlapsSimple Random Tests", {
 		(cos == check)
