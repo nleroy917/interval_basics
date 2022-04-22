@@ -32,8 +32,31 @@ randomGRanges = function(){
 #'   database = data.frame(starts=c(35, 45, 55), ends=c(45, 65, 85))
 #'   countOverlapsSimple(query, database)  # returns 2
 countOverlapsSimple = function(query, database) {
-
-	# Implement this function
+  
+  # wrapper for function overlapping
+  .doesOverlap = function(A, B) {
+    # map to better names
+    A_start = A[1]
+    A_end = A[2]
+    B_start = B$start
+    B_end = B$end
+    
+    # check olap
+    if (A_start <= B_end && A_end >= B_start) {
+      return(TRUE)
+    } else {
+      return(FALSE)
+    }
+  }
+  
+  # calculate all overlaps
+  database$overlaps_query <- apply(database, 1, .doesOverlap, B=query)
+  
+  # debug
+  # print(sum(database$overlaps_query, na.rm=TRUE))
+  
+  # return count
+  return(sum(database$overlaps_query, na.rm=TRUE))
 
 }
 
@@ -47,8 +70,12 @@ countOverlapsSimple = function(query, database) {
 # @param gr2  Second GRanges object
 # @return The Jaccard score (as numeric)
 calculateJaccardScore = function(gr1, gr2){
-
 	# Implement this function
+  return(
+    as.numeric(
+      length(intersect(gr1, gr2))/length(union(gr1, gr2))
+    )
+  )
 }
 
 # Calculate pairwise Jaccard similarity among several interval sets
@@ -63,9 +90,19 @@ calculateJaccardScore = function(gr1, gr2){
 #' lst = replicate(10, randomGRanges())
 #' pairwiseJaccard(lst)
 pairwiseJaccard = function(lst) {
-	# Implement this function
 	# Compute the pairwise Jaccard Score and return in matrix form
-	# Return only 3 significant figures
+  N = length(lst)
+  J_MAT = matrix(nrow=N, ncol=N)
+  
+  # loop through
+  for (i in 1:N) {
+    for (j in 1:N) {
+      # Return only 3 significant figures
+      J_MAT[i,j] = signif(calculateJaccardScore(lst[[i]], lst[[j]]), digits=3)
+    }
+  }
+  
+  return(J_MAT)
 }
 
 

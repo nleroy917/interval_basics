@@ -1,0 +1,43 @@
+---
+title: "Task 2"
+author: "Nathan LeRoy"
+date: "4/16/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(GenomicRanges)
+source("./src/intervals.R")
+```
+
+## 0. Calculate the pairwise Jaccard similarity for this set of 4 experiments:
+```{r calculate}
+filesList = c(
+  "data/helas3_ctcf.narrowPeak.gz",
+  "data/helas3_jun.narrowPeak.gz",
+  "data/hepg2_ctcf.narrowPeak.gz",
+  "data/hepg2_jun.narrowPeak.gz"
+)
+
+files = lapply(filesList, read.table)
+granges = lapply(files, function(x) {
+  GRanges(seqnames=x$V1, ranges=IRanges(x$V2, x$V3))
+})
+
+pairwiseJaccard(granges)
+```
+
+## 1. Which two interval sets are the most similar?
+
+The **HeLa S3 - CTCF** (1) sets and the **Hep G2 - CTCF** (3) sets are the most similar according to the Jaccard similarity matrix.
+
+## 2. Which two interval sets are the most different?
+The **HeLA S3 Jun** (2) and **Hep G2 - CTCF** (3) sets are the the most different according to the Jaccard similarity matrix.
+
+## 3. Based on these results, which factor, CTCF or Jun, would you predict varies more across cell types?
+Based on these results, I would expect Jun to vary more across cells. The two different cell lines with the Jun transcription factor have a much smaller Jaccard similarity value (0.165) than the two cell lines with CTCF (0.607).
+
+## 4. Based on these results, do the genomic locations found by ChIP-seq experiments depend more on the cell-type, or on the transcription factor being assayed?
+From these results, it would seem that the genomic locations found in the ChIP-seq experiments depend more on the transcription factor (TF) being assayed. The Jaccard similarity is **higher** for identical TFs than it is for identical cell-lines.
+
